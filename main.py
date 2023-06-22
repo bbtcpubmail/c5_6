@@ -1,16 +1,38 @@
-# This is a sample Python script.
+import telebot
+from config import BOT_TOKEN
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Create Telegram bot
+bot = telebot.TeleBot(BOT_TOKEN)
+
+# Обрабатываем команды '/start' or '/help'.
+@bot.message_handler(commands=['start'])
+def handle_start_help(message):
+    bot.reply_to(message, f"Welcome, {message.from_user.first_name}.\n"
+                          f"Type \help for Help))")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@bot.message_handler(commands=['help'])
+def handle_start_help(message):
+    bot.reply_to(message, """
+/help - this help
+/start - start bot
+/list - list of supported currencies
+For converting currency type:
+{CHAR_CODE_SOURCE} {CHAR_CODE_DEST} {AMOUNT}
+    """)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@bot.message_handler(commands=['list'])
+def handle_start_help(message):
+    bot.reply_to(message, '')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+
+
+
+# run telebot
+bot.polling(none_stop=True)
+
+
+
