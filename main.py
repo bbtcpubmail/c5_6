@@ -4,7 +4,6 @@ from extensions import Exchanger
 
 # Create Telegram bot
 bot = telebot.TeleBot(BOT_TOKEN)
-exchanger = Exchanger()
 
 # Обрабатываем команды '/start' or '/help'.
 @bot.message_handler(commands=['start'])
@@ -18,24 +17,21 @@ def handle_start_help(message):
     bot.reply_to(message, """
 /help - this help
 /start - start bot
-/list - list of supported currencies
+/values - list of supported currencies
 For converting currency type:
 {CHAR_CODE_BASE} {CHAR_CODE_TARGET} {AMOUNT}
     """)
 
 
-@bot.message_handler(commands=['list'])
+@bot.message_handler(commands=['values'])
 def handle_list_currencies(message):
-    bot.reply_to(message, exchanger.currencies)
+    bot.reply_to(message, Exchanger.get_currencies())
 
 
 @bot.message_handler(content_types=['text'])
 def handle_cur_exchange(message):
-    base_char, target_char, amount = message.text.split()
-    bot.reply_to(message, Exchanger.cur_exchange(base_char, target_char, float(amount)))
-
-
-
+    base, quote, amount = message.text.upper().split()
+    bot.reply_to(message, f"{amount} {base} = {Exchanger.get_price(base, quote, float(amount))} {quote}")
 
 
 
