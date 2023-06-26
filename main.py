@@ -1,9 +1,10 @@
 import telebot
 from config import BOT_TOKEN
-from extensions import Exchanger
+from extensions import Exchanger, ExchangeException
 
 # Create Telegram bot
 bot = telebot.TeleBot(BOT_TOKEN)
+
 
 # Обрабатываем команды '/start' or '/help'.
 @bot.message_handler(commands=['start'])
@@ -30,9 +31,12 @@ def handle_list_currencies(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_cur_exchange(message):
-    base, quote, amount = message.text.upper().split()
-    bot.reply_to(message, f"{amount} {base} = {Exchanger.get_price(base, quote, float(amount))} {quote}")
-
+    try:
+        text = Exchanger.parse_message(message)
+    except ExchangeException as e:
+        bot.reply_to(message, e)
+    else:
+        bot.reply_to(message, text)
 
 
 # run telebot
