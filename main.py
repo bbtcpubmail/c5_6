@@ -2,17 +2,19 @@ import telebot
 from config import BOT_TOKEN
 from extensions import Exchanger, ExchangeException
 
-# Create Telegram bot
+# Создание бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
-# Обрабатываем команды '/start' or '/help'.
+# Обрабатываем команду '/start'
 @bot.message_handler(commands=['start'])
 def handle_start_help(message):
     bot.reply_to(message, f"Welcome, {message.from_user.first_name}.\n"
+                          f"The bot converts currencies using the ruble exchange rate as a base.\n"
                           f"Type /help for Help))")
 
 
+# Обрабатываем команду '/help'
 @bot.message_handler(commands=['help'])
 def handle_start_help(message):
     bot.reply_to(message, """
@@ -24,23 +26,22 @@ For converting currency type:
     """)
 
 
+# Отображаем список и коды валют
 @bot.message_handler(commands=['values'])
 def handle_list_currencies(message):
     bot.reply_to(message, Exchanger.get_currencies())
 
 
+# Обработка текстовых сообщений
 @bot.message_handler(content_types=['text'])
 def handle_cur_exchange(message):
     try:
         text = Exchanger.parse_message(message)
     except ExchangeException as e:
-        bot.reply_to(message, e)
+        bot.reply_to(message, str(e))
     else:
         bot.reply_to(message, text)
 
 
 # run telebot
 bot.polling(none_stop=True)
-
-
-

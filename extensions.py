@@ -1,16 +1,17 @@
 import requests
 import json
-
 import telebot.types
-
 from config import JSON_CURRENCY_API
 
 
+# собственный класс исключений
 class ExchangeException(Exception):
     pass
 
 
+# класс - обработчик команд
 class Exchanger:
+    # Парсинг сообщений пользователя. Проверка корректности ввода
     @staticmethod
     def parse_message(message: telebot.types.Message) -> str:
         param_list = message.text.upper().split()
@@ -23,6 +24,7 @@ class Exchanger:
             raise ExchangeException("Количество валюты указано с ошибкой.")
         return f"{amount} {base} = {Exchanger.get_price(base, quote, float(amount))} {quote}"
 
+    # Список валют
     @staticmethod
     def get_currencies() -> str:
         d = Exchanger.get_json()['Valute']
@@ -31,6 +33,7 @@ class Exchanger:
             cur_list += cur['CharCode'] + ' - ' + cur['Name'] + '\n'
         return cur_list
 
+    # Получаем JSON-структуру с курсами валют
     @staticmethod
     def get_json():
         r = requests.get(JSON_CURRENCY_API)
@@ -39,6 +42,7 @@ class Exchanger:
         else:
             raise ExchangeException("Ошибка сервера, попробуйте позднее")
 
+    # Разбор JSON и вывод результата
     @staticmethod
     def get_price(char_code_base: str, char_code_target: str, amount: float) -> str:
         d = Exchanger.get_json()['Valute']
